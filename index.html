@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape Room: Graveyard Mystery</title>
+    <meta name="description" content="Solve the puzzles to escape the mysterious graveyard">
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+    <script src="audio-unlock.js"></script>
+    <script src="movement.js"></script>
+    <script src="overlay.js"></script>
+    <script src="VRoverlay.js"></script>
+    <script src="escape-room-game.js"></script>
+  </head>
+  <body>
+    
+    <a-scene fog="type: linear; color: #000000; near: 1; far: 8">
+      <audio id="ambient-sound" src="blueroom.mp3" preload="auto"></audio>
+
+      <a-assets>
+        <a-asset-item id="ctree" src="dead_tree.glb"></a-asset-item>
+        <a-asset-item id="grave" src="obelisk.glb"></a-asset-item>
+        <a-asset-item id="note" src="book.glb"></a-asset-item>
+        <a-asset-item id="crystal" src="crystal.glb"></a-asset-item>
+        <a-asset-item id="magical_book" src="magical_book.glb"></a-asset-item>
+      </a-assets>
+
+      <a-entity
+        sound="src: #ambient-sound;
+        autoplay: true;
+        loop: true;
+        volume: 0.5;
+        positional: false">
+      </a-entity>
+
+      <!-- Interactive Tree with hidden symbol -->
+      <a-entity
+        gltf-model="#ctree"
+        position="3.5 -0.2 -3"
+        rotation="0 180 0"
+        scale="9 9 9"
+        class="interactive"
+        puzzle-piece
+        data-symbol="🌙"
+        data-found="false">
+      </a-entity>
+
+      <!-- Floating crystal with symbol -->
+      <a-entity id="crystal"
+        gltf-model="#crystal"
+        position="-3 2 3"
+        rotation="90 0 0"
+        scale="0.01 0.01 0.01"
+        class="interactive" 
+        puzzle-piece 
+        data-symbol="⭐" 
+        data-found="false"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 5000">
+      </a-entity>
+
+       <!-- Ancient book with symbol -->
+      <a-entity id="magical_book"
+        gltf-model="#magical_book"
+        position="3 0.5 2"
+        rotation="90 0 0"
+        scale="0.01 0.01 0.01"
+        class="interactive" 
+        puzzle-piece 
+        data-symbol="🔥" 
+        data-found="false">
+      </a-entity>
+
+      <!-- Interactive Note with riddle -->
+      <a-entity
+        gltf-model="#note"
+        position="-4 0 -0.5"
+        rotation="0 90 0"
+        scale="1 1 1"
+        class="interactive"
+        note-puzzle>
+      </a-entity>
+      
+      <!-- Interactive Gravestone with puzzle input -->
+      <a-entity
+        gltf-model="#grave"
+        position="-2 0 -3"
+        rotation="0 0 0"
+        scale="4 4 4"
+        class="interactive"
+        gravestone-puzzle>
+        <!-- Symbol display on gravestone -->
+        <a-text id="gravestone-display" value="___" position="0 2 0.5" rotation="0 0 0" align="center" color="#00ff00" scale="1 1 1"></a-text>
+      </a-entity>
+
+      <!-- Room Boundaries -->
+      <!-- Back Wall -->
+      <a-plane position="0 2.5 -5" rotation="0 0 0" width="10" height="5" color="#2a2a2a" material="roughness: 0.8"></a-plane>
+      
+      <!-- Left Wall -->
+      <a-plane position="-5 2.5 0" rotation="0 90 0" width="10" height="5" color="#2a2a2a" material="roughness: 0.8"></a-plane>
+      
+      <!-- Right Wall -->
+      <a-plane position="5 2.5 0" rotation="0 -90 0" width="10" height="5" color="#2a2a2a" material="roughness: 0.8"></a-plane>
+      
+      <!-- Front Wall with Door -->
+      <a-plane position="0 2.5 5" rotation="0 180 0" width="4" height="5" color="#2a2a2a" material="roughness: 0.8"></a-plane>
+      <a-plane position="-3 2.5 5" rotation="0 180 0" width="2" height="5" color="#2a2a2a" material="roughness: 0.8"></a-plane>
+      <a-plane position="3 2.5 5" rotation="0 180 0" width="2" height="5" color="#2a2a2a" material="roughness: 0.8"></a-plane>
+      
+      <!-- Exit Door (initially locked) -->
+      <a-box id="exit-door" position="0 2 4.95" width="2" height="4" depth="0.1" color="#4a0e0e" class="interactive" escape-door>
+        <a-text value="LOCKED" position="0 0 -0.05" rotation="180 0 180" align="center" color="#ff0000" scale="0.5 0.5 0.5"></a-text>
+      </a-box>
+
+      <!-- Floor -->
+      <a-plane 
+        position="0 0 0" 
+        rotation="-90 0 0" 
+        width="10" 
+        height="10" 
+        color="#1a1a1a" 
+        material="opacity: 0.9; roughness: 1"
+      ></a-plane>
+
+      <!-- Ceiling -->
+      <a-plane 
+        position="0 5 0" 
+        rotation="90 0 0" 
+        width="10" 
+        height="10" 
+        color="#0a0a0a" 
+        material="roughness: 0.9"
+      ></a-plane>
+
+
+      <!-- Camera rig with controllers as children -->
+      <a-entity id="camera-rig" player-jump>
+        <a-camera id="camera" position="0 1.6 0" look-controls="pointerLockEnabled: true">
+          <a-cursor id="desktop-cursor" rayOrigin="mouse" raycaster="objects: .interactive, button, [class*='close-btn']" visible="true"></a-cursor>
+        </a-camera>
+
+        <!-- Left controller -->
+        <a-entity
+          id="left-controller"
+          laser-controls="hand: left"
+          raycaster="objects: .interactive; far: 10"
+          line="color: #00ff00; opacity: 0.8;"
+           cursor="rayOrigin: entity"
+          thumbstick-audio
+          smooth-locomotion
+        ></a-entity>
+
+        <!-- Right controller -->
+        <a-entity
+          id="right-controller"
+          laser-controls="hand: right"
+          raycaster="objects: .interactive; far: 10"
+          line="color: #00ff00; opacity: 0.8;"
+          cursor="rayOrigin: entity"
+          vr-smooth-turn
+          thumbstick-audio
+        ></a-entity>
+      </a-entity>
+
+      <!-- LIGHTS -->
+    <a-light type="ambient" intensity="0.2" color="#1a1a2e"></a-light>
+    <a-light type="point" position="0 4 2" intensity="0.8" color="#ffa500">
+      <a-animation attribute="intensity" values="0.8;1.2;0.8" dur="3000" repeat="indefinite"></a-animation>
+    </a-light>
+    <a-light type="point" position="-3 2 -3" intensity="0.5" color="#00ffff"></a-light>
+    <a-light type="point" position="3 2 3" intensity="0.5" color="#ff00ff"></a-light>
+    
+    
+    </a-scene>
+  </body>
+</html>
