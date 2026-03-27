@@ -27,17 +27,35 @@
         <a-asset-item id="crate" src="wooden_crate.glb"></a-asset-item>
       </a-assets>
 
-      <a-entity
+<a-entity
         sound="src: #ambient-sound;
         autoplay: true;
         loop: true;
         volume: 0.5;
         positional: false">
       </a-entity>
+      
+      <!-- NON Interactives -->
+      <a-entity
+        id="defi"
+        gltf-model="#defi"
+        scale="0.01 0.01 0.01"
+        position="4 1.6 1.6"
+        rotation="0 90 0"
+      ></a-entity>
 
+      <a-entity
+        id="fire"
+        gltf-model="#fire"
+        scale="2 2 2"
+        position="4 0 2.2"
+        rotation="0 90 0"
+      ></a-entity>
+      
       <!-- Interactive Tree with hidden symbol -->
       <a-entity
-        gltf-model="#ctree"
+        id="key"
+        gltf-model="#key"
         position="3.5 -0.2 -3"
         rotation="0 180 0"
         scale="9 9 9"
@@ -48,11 +66,11 @@
       </a-entity>
 
       <!-- Floating crystal with symbol -->
-      <a-entity id="crystal"
-        gltf-model="#crystal"
+      <a-entity id="bookshelf"
+        gltf-model="#bookshelf"
         position="-3 2 3"
-        rotation="90 0 0"
-        scale="0.01 0.01 0.01"
+        rotation="0 0 0"
+        scale="2 2 2"
         class="interactive" 
         puzzle-piece 
         data-symbol="⭐" 
@@ -61,9 +79,9 @@
       </a-entity>
 
        <!-- Ancient book with symbol -->
-      <a-entity id="magical_book"
-        gltf-model="#magical_book"
-        position="3 0.5 2"
+      <a-entity id="crate"
+        gltf-model="#crate"
+        position="3.9 1.48 2.27"
         rotation="90 0 0"
         scale="0.01 0.01 0.01"
         class="interactive" 
