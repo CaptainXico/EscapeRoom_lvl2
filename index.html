@@ -156,7 +156,7 @@
       <!-- Camera rig with controllers as children -->
       <a-entity id="camera-rig" player-jump>
         <a-camera id="camera" position="0 1.6 0" look-controls="pointerLockEnabled: true">
-          <a-cursor id="desktop-cursor" rayOrigin="mouse" raycaster="objects: .interactive, button, [class*='close-btn']" visible="true"></a-cursor>
+          <a-cursor id="desktop-cursor" rayOrigin="mouse" raycaster="objects: .interactive, button, [class*='close-btn']" visible="true" color="white"></a-cursor>
         </a-camera>
 
         <!-- Left controller -->
@@ -184,11 +184,11 @@
 
       <!-- LIGHTS -->
     <a-light type="ambient" intensity="0.2" color="#1a1a2e"></a-light>
-    <a-light type="point" position="0 4 2" intensity="0.8" color="#ffa500">
+    <a-light id="center" type="ambient" position="0 4 2" intensity="1" color="#ffa500">
       <a-animation attribute="intensity" values="0.8;1.2;0.8" dur="3000" repeat="indefinite"></a-animation>
     </a-light>
-    <a-light type="point" position="-3 2 -3" intensity="0.5" color="#00ffff"></a-light>
-    <a-light type="point" position="3 2 3" intensity="0.5" color="#ff00ff"></a-light>
+    <a-light id="blue" type="point" position="-3 2 -3" intensity="2" color="#00ffff"></a-light>
+    <a-light id="pink" type="point" position="3 2 3" intensity="1" color="#ff00ff"></a-light>
     
     
     </a-scene>
