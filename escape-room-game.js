@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Game state
     const gameState = {
         foundSymbols: [],
-        correctSequence: ['⚕️', '💉', '🩺'],
+        correctSequence: ['🌙', '⭐', '🔥'],
         currentInput: [],
         doorUnlocked: false,
         noteRead: false,
@@ -275,8 +275,8 @@ document.addEventListener('DOMContentLoaded', function() {
         },
 
         showRiddle() {
-            const riddleText = `Where healing hands and needles meet,
-Three medical tools make spirits complete.
+            const riddleText = `When night meets day and stars burn bright,
+Three symbols hold the key to light.
 Find them all and speak their truth,
 To escape the darkness of this roof.`;
 
