@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Game state
     const gameState = {
         foundSymbols: [],
-        correctSequence: ['🌙', '⭐', '🔥'],
+        correctSequence: ['⚕️', '💉', '🩺'],
         currentInput: [],
         doorUnlocked: false,
         noteRead: false,
@@ -275,8 +275,8 @@ document.addEventListener('DOMContentLoaded', function() {
         },
 
         showRiddle() {
-            const riddleText = `When night meets day and stars burn bright,
-Three symbols hold the key to light.
+            const riddleText = `Where healing hands and needles meet,
+Three medical tools make spirits complete.
 Find them all and speak their truth,
 To escape the darkness of this roof.`;
 
@@ -645,7 +645,7 @@ To escape the darkness of this roof.`;
                 <h1 style="font-size: 48px; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">🎉 ESCAPE ROOM COMPLETE! 🎉</h1>
                 <p style="font-size: 24px; margin-bottom: 30px;">You solved the mystery and escaped!</p>
                 <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
-                    <button onclick="window.open('https://captainxico.github.io/EscapeRoom_lvl2/', '_blank')" style="
+                    <button onclick="window.open('https://captainxico.github.io/EscapeRoom/', '_blank')" style="
                         background: #ff6b35;
                         color: white;
                         border: none;
@@ -654,7 +654,7 @@ To escape the darkness of this roof.`;
                         cursor: pointer;
                         font-size: 18px;
                         font-weight: bold;
-                    ">LEVEL 2</button>
+                    ">LEVEL 1</button>
                     <button onclick="location.reload()" style="
                         background: white;
                         color: black;
