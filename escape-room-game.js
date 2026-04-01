@@ -1,16 +1,10 @@
 // escape-room-game.js - Core escape room game logic
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Detect if user is on mobile device
-    function isMobile() {
-        return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-                (window.innerWidth <= 768 && 'ontouchstart' in window));
-    }
-
     // Game state
     const gameState = {
         foundSymbols: [],
-        correctSequence: ['🌙', '⭐', '🔥'],
+        correctSequence: ['⚕️', '💉', '🩺'],
         currentInput: [],
         doorUnlocked: false,
         noteRead: false,
@@ -82,65 +76,44 @@ document.addEventListener('DOMContentLoaded', function() {
         uiElement.style.pointerEvents = 'auto';
         document.body.appendChild(uiElement);
         
-        // Exit pointer lock to show cursor (only on desktop)
-        if (!isMobile()) {
-            enableDesktopCursor();
-        }
+        // Exit pointer lock to show cursor
+        enableDesktopCursor();
         
-        // Add close button handler for both click and touch
+        // Add close button handler
         const closeButtons = uiElement.querySelectorAll('button');
         closeButtons.forEach(button => {
             if (button.textContent.toLowerCase().includes('close') || 
                 button.textContent.toLowerCase().includes('cancel')) {
-                
-                // Handle desktop clicks
                 button.addEventListener('click', (e) => {
                     console.log('Close button clicked');
                     e.preventDefault();
                     e.stopPropagation();
                     uiElement.remove();
-                    if (!isMobile()) {
-                        enableVRCursorImmediate(); // Use immediate pointer lock
-                    }
-                    if (closeCallback) closeCallback();
-                });
-                
-                // Handle mobile touches
-                button.addEventListener('touchend', (e) => {
-                    console.log('Close button touched');
-                    e.preventDefault();
-                    e.stopPropagation();
-                    uiElement.remove();
+                    enableVRCursorImmediate(); // Use immediate pointer lock
                     if (closeCallback) closeCallback();
                 });
             }
         });
         
-        // Also close on Escape key (desktop only)
-        if (!isMobile()) {
-            const escapeHandler = (e) => {
-                if (e.key === 'Escape') {
-                    console.log('Escape key pressed');
-                    uiElement.remove();
-                    enableVRCursorImmediate(); // Use immediate pointer lock
-                    document.removeEventListener('keydown', escapeHandler);
-                    if (closeCallback) closeCallback();
-                }
-            };
-            document.addEventListener('keydown', escapeHandler);
-        }
+        // Also close on Escape key
+        const escapeHandler = (e) => {
+            if (e.key === 'Escape') {
+                console.log('Escape key pressed');
+                uiElement.remove();
+                enableVRCursorImmediate(); // Use immediate pointer lock
+                document.removeEventListener('keydown', escapeHandler);
+                if (closeCallback) closeCallback();
+            }
+        };
+        document.addEventListener('keydown', escapeHandler);
     }
 
     // Register puzzle piece component
     AFRAME.registerComponent('puzzle-piece', {
         init() {
-            // Add hover detection for both PC and VR
+            // Add hover detection
             this.el.addEventListener('mouseenter', () => this.onHover());
             this.el.addEventListener('mouseleave', () => this.onUnhover());
-            
-            // VR controller hover detection
-            this.el.addEventListener('raycaster-intersected', () => this.onHover());
-            this.el.addEventListener('raycaster-intersected-cleared', () => this.onUnhover());
         },
 
         onHover() {
@@ -184,13 +157,6 @@ document.addEventListener('DOMContentLoaded', function() {
         },
 
         showNotification(message) {
-            // Try VR UI first, fallback to DOM
-            if (window.VRUIManager && VRUIManager.showNotification(message, 2000)) {
-                // VR UI handled it
-                return;
-            }
-
-            // Fallback to DOM for non-VR
             const notification = document.createElement('div');
             notification.style.cssText = `
                 position: fixed;
@@ -218,13 +184,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Register note puzzle component
     AFRAME.registerComponent('note-puzzle', {
         init() {
-            // Add hover detection for both PC and VR
+            // Add hover detection
             this.el.addEventListener('mouseenter', () => this.onHover());
             this.el.addEventListener('mouseleave', () => this.onUnhover());
-            
-            // VR controller hover detection
-            this.el.addEventListener('raycaster-intersected', () => this.onHover());
-            this.el.addEventListener('raycaster-intersected-cleared', () => this.onUnhover());
         },
 
         onHover() {
@@ -240,8 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
 
         showHoverHint() {
-            // Show appropriate hint based on device
-            const hintText = isMobile() ? 'Tap to read note' : 'Press E to read note';
+            // Show "Press E" hint
             const hint = document.createElement('div');
             hint.id = 'hover-hint';
             hint.style.cssText = `
@@ -258,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 z-index: 1500;
                 pointer-events: none;
             `;
-            hint.textContent = hintText;
+            hint.textContent = 'Press E to read note';
             document.body.appendChild(hint);
         },
 
@@ -275,18 +236,11 @@ document.addEventListener('DOMContentLoaded', function() {
         },
 
         showRiddle() {
-            const riddleText = `When night meets day and stars burn bright,
-Three symbols hold the key to light.
+            const riddleText = `Where healing hands and needles meet,
+Three medical tools make spirits complete.
 Find them all and speak their truth,
 To escape the darkness of this roof.`;
 
-            // Try VR UI first, fallback to DOM
-            if (window.VRUIManager && VRUIManager.showRiddle(riddleText)) {
-                // VR UI handled it
-                return;
-            }
-
-            // Fallback to DOM for non-VR
             const riddleBox = document.createElement('div');
             riddleBox.style.cssText = `
                 position: fixed;
@@ -326,13 +280,9 @@ To escape the darkness of this roof.`;
     // Register gravestone puzzle component
     AFRAME.registerComponent('gravestone-puzzle', {
         init() {
-            // Add hover detection for both PC and VR
+            // Add hover detection
             this.el.addEventListener('mouseenter', () => this.onHover());
             this.el.addEventListener('mouseleave', () => this.onUnhover());
-            
-            // VR controller hover detection
-            this.el.addEventListener('raycaster-intersected', () => this.onHover());
-            this.el.addEventListener('raycaster-intersected-cleared', () => this.onUnhover());
         },
 
         onHover() {
@@ -348,8 +298,7 @@ To escape the darkness of this roof.`;
         },
 
         showHoverHint() {
-            // Show appropriate hint based on device
-            const hintText = isMobile() ? 'Tap to input symbols' : 'Press E to input symbols';
+            // Show "Press E" hint
             const hint = document.createElement('div');
             hint.id = 'hover-hint';
             hint.style.cssText = `
@@ -366,7 +315,7 @@ To escape the darkness of this roof.`;
                 z-index: 1500;
                 pointer-events: none;
             `;
-            hint.textContent = hintText;
+            hint.textContent = 'Press E to input symbols';
             document.body.appendChild(hint);
         },
 
@@ -390,13 +339,6 @@ To escape the darkness of this roof.`;
         },
 
         showSymbolSelector() {
-            // Try VR UI first, fallback to DOM
-            if (window.VRUIManager && VRUIManager.showSymbolSelector(gameState.foundSymbols, gameState.currentInput)) {
-                // VR UI handled it
-                return;
-            }
-
-            // Fallback to DOM for non-VR
             // Remove existing selector if present
             const existing = document.getElementById('symbol-selector');
             if (existing) existing.remove();
@@ -422,9 +364,9 @@ To escape the darkness of this roof.`;
             selector.innerHTML = `
                 <h3 style="margin-top: 0; color: #00ff00;">Choose Symbol</h3>
                 <p style="margin-bottom: 20px;">Current: ${currentDisplay}</p>
-                <div id="symbol-buttons" style="display: flex; gap: 15px; margin-bottom: 20px;">
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
                     ${symbols.map(symbol => `
-                        <button data-symbol="${symbol}" style="
+                        <button onclick="selectSymbol('${symbol}')" style="
                             background: #333;
                             color: white;
                             border: 2px solid #00ff00;
@@ -433,10 +375,11 @@ To escape the darkness of this roof.`;
                             cursor: pointer;
                             font-size: 24px;
                             transition: all 0.3s;
-                        ">${symbol}</button>
+                        " onmouseover="this.style.background='#00ff00'; this.style.color='black'" 
+                           onmouseout="this.style.background='#333'; this.style.color='white'">${symbol}</button>
                     `).join('')}
                 </div>
-                <button id="clear-btn" style="
+                <button onclick="clearSymbols()" style="
                     background: #ff0000;
                     color: white;
                     border: none;
@@ -454,38 +397,6 @@ To escape the darkness of this roof.`;
                     cursor: pointer;
                 ">Close</button>
             `;
-
-            // Add event listeners for symbol buttons
-            const symbolButtons = selector.querySelectorAll('[data-symbol]');
-            symbolButtons.forEach(button => {
-                const symbol = button.dataset.symbol;
-                
-                // Desktop click
-                button.addEventListener('click', () => {
-                    window.selectSymbol(symbol);
-                });
-                
-                // Mobile touch
-                button.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    window.selectSymbol(symbol);
-                });
-                
-                // Mobile hover effects
-                button.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    button.style.background = '#00ff00';
-                    button.style.color = 'black';
-                });
-            });
-
-            // Add event listeners for clear button
-            const clearBtn = selector.querySelector('#clear-btn');
-            clearBtn.addEventListener('click', window.clearSymbols);
-            clearBtn.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                window.clearSymbols();
-            });
 
             showUIWithCursor(selector);
         },
@@ -552,13 +463,9 @@ To escape the darkness of this roof.`;
     // Register escape door component
     AFRAME.registerComponent('escape-door', {
         init() {
-            // Add hover detection for both PC and VR
+            // Add hover detection
             this.el.addEventListener('mouseenter', () => this.onHover());
             this.el.addEventListener('mouseleave', () => this.onUnhover());
-            
-            // VR controller hover detection
-            this.el.addEventListener('raycaster-intersected', () => this.onHover());
-            this.el.addEventListener('raycaster-intersected-cleared', () => this.onUnhover());
         },
 
         onHover() {
@@ -574,9 +481,7 @@ To escape the darkness of this roof.`;
         },
 
         showHoverHint() {
-            const message = gameState.doorUnlocked 
-                ? (isMobile() ? 'Tap to escape!' : 'Press E to escape!') 
-                : (isMobile() ? 'Tap to try door' : 'Press E to try door');
+            const message = gameState.doorUnlocked ? 'Press E to escape!' : 'Press E to try door';
             const hint = document.createElement('div');
             hint.id = 'hover-hint';
             hint.style.cssText = `
@@ -615,13 +520,6 @@ To escape the darkness of this roof.`;
         },
 
         showVictoryScreen() {
-            // Try VR UI first, fallback to DOM
-            if (window.VRUIManager && VRUIManager.showVictoryScreen()) {
-                // VR UI handled it
-                return;
-            }
-
-            // Fallback to DOM for non-VR
             // Enable desktop cursor for victory screen interaction
             enableDesktopCursor();
             
@@ -644,28 +542,16 @@ To escape the darkness of this roof.`;
             victoryScreen.innerHTML = `
                 <h1 style="font-size: 48px; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">🎉 ESCAPE ROOM COMPLETE! 🎉</h1>
                 <p style="font-size: 24px; margin-bottom: 30px;">You solved the mystery and escaped!</p>
-                <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
-                    <button onclick="window.open('https://captainxico.github.io/EscapeRoom_lvl2/', '_blank')" style="
-                        background: #ff6b35;
-                        color: white;
-                        border: none;
-                        padding: 15px 30px;
-                        border-radius: 10px;
-                        cursor: pointer;
-                        font-size: 18px;
-                        font-weight: bold;
-                    ">LEVEL 2</button>
-                    <button onclick="location.reload()" style="
-                        background: white;
-                        color: black;
-                        border: none;
-                        padding: 15px 30px;
-                        border-radius: 10px;
-                        cursor: pointer;
-                        font-size: 18px;
-                        font-weight: bold;
-                    ">Play Again</button>
-                </div>
+                <button onclick="location.reload()" style="
+                    background: white;
+                    color: black;
+                    border: none;
+                    padding: 15px 30px;
+                    border-radius: 10px;
+                    cursor: pointer;
+                    font-size: 18px;
+                    font-weight: bold;
+                ">Play Again</button>
             `;
             document.body.appendChild(victoryScreen);
         },
@@ -753,13 +639,13 @@ To escape the darkness of this roof.`;
     console.log('Escape Room Game Initialized');
     console.log('Find 3 symbols and solve the gravestone puzzle to escape!');
     
-    // Global interaction handler for both PC (E key) and VR (trigger)
+    // Global E key handler for interactions
     document.addEventListener('keydown', (e) => {
         if (e.key.toLowerCase() === 'e' && gameState.hoveredObject) {
             e.preventDefault();
             console.log('E key pressed on object:', gameState.hoveredObject);
             
-            // Call interact method if it exists
+            // Call the interact method if it exists
             const component = gameState.hoveredObject.components;
             if (component && component['puzzle-piece']) {
                 component['puzzle-piece'].interact();
@@ -772,84 +658,6 @@ To escape the darkness of this roof.`;
             }
         }
     });
-
-    // VR Controller interaction handler
-    document.addEventListener('controllerconnected', (e) => {
-        console.log('Controller connected:', e.detail.name);
-    });
-
-    // Listen for controller trigger events
-    document.addEventListener('mousedown', (e) => {
-        // Check if this is a controller trigger event
-        if (e.target && e.target.hasAttribute('vive-controls') || 
-            e.target.hasAttribute('oculus-touch-controls') ||
-            e.target.hasAttribute('hand-controls')) {
-            
-            // Check if controller is pointing at something
-            const raycaster = e.target.components.raycaster;
-            if (raycaster && raycaster.intersections.length > 0) {
-                const intersection = raycaster.intersections[0];
-                const hoveredObject = intersection.object.el;
-                
-                console.log('VR trigger on object:', hoveredObject);
-                
-                // Call interact method if it exists
-                const component = hoveredObject.components;
-                if (component && component['puzzle-piece']) {
-                    component['puzzle-piece'].interact();
-                } else if (component && component['note-puzzle']) {
-                    component['note-puzzle'].interact();
-                } else if (component && component['gravestone-puzzle']) {
-                    component['gravestone-puzzle'].interact();
-                } else if (component && component['escape-door']) {
-                    component['escape-door'].interact();
-                }
-            }
-        }
-    });
-    
-    // Mobile touch interaction handler
-    if (isMobile()) {
-        document.addEventListener('touchstart', (e) => {
-            // Don't prevent default for UI interactions
-            // Only handle 3D object interactions when not touching UI elements
-            
-            // Check if touch is on UI elements (buttons, overlays, etc.)
-            const touch = e.touches[0];
-            const element = document.elementFromPoint(touch.clientX, touch.clientY);
-            
-            // If touching UI elements, let them handle the touch normally
-            if (element && (
-                element.tagName === 'BUTTON' ||
-                element.tagName === 'A' ||
-                element.closest('button') ||
-                element.closest('a') ||
-                element.closest('#symbol-selector') ||
-                element.closest('#mobile-overlay') ||
-                element.closest('[class*="close-btn"]')
-            )) {
-                return; // Let UI elements handle their own touch events
-            }
-            
-            // Handle 3D object interactions
-            if (gameState.hoveredObject) {
-                e.preventDefault(); // Only prevent default for 3D interactions
-                console.log('Mobile tap on object:', gameState.hoveredObject);
-                
-                // Call interact method if it exists
-                const component = gameState.hoveredObject.components;
-                if (component && component['puzzle-piece']) {
-                    component['puzzle-piece'].interact();
-                } else if (component && component['note-puzzle']) {
-                    component['note-puzzle'].interact();
-                } else if (component && component['gravestone-puzzle']) {
-                    component['gravestone-puzzle'].interact();
-                } else if (component && component['escape-door']) {
-                    component['escape-door'].interact();
-                }
-            }
-        }, { passive: false });
-    }
     
     // Global click handler to manage first click after UI
     document.addEventListener('click', (e) => {
